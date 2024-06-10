@@ -8596,6 +8596,9 @@ const _sfc_main$m = {
     },
     isAudio() {
       return this.room.lastMessage.files ? isAudioFile(this.room.lastMessage.files[0]) : false;
+    },
+    isImage() {
+      return this.room.lastMessage.files ? isImageFile(this.room.lastMessage.files[0]) : false;
     }
   },
   methods: {
@@ -8621,22 +8624,27 @@ const _hoisted_7$6 = {
   key: 1,
   class: "vac-text-ellipsis"
 };
-const _hoisted_8$4 = {
-  key: 3,
+const _hoisted_8$4 = ["src"];
+const _hoisted_9$4 = {
+  key: 2,
   class: "vac-text-ellipsis"
 };
-const _hoisted_9$4 = { class: "vac-room-options-container" };
 const _hoisted_10$4 = {
+  key: 4,
+  class: "vac-text-ellipsis"
+};
+const _hoisted_11$3 = { class: "vac-room-options-container" };
+const _hoisted_12$3 = {
   key: 0,
   class: "vac-badge-counter vac-room-badge"
 };
-const _hoisted_11$3 = {
+const _hoisted_13$1 = {
   key: 0,
   class: "vac-menu-options"
 };
-const _hoisted_12$3 = { class: "vac-menu-list" };
-const _hoisted_13$1 = ["onClick"];
-const _hoisted_14 = /* @__PURE__ */ createBaseVNode("div", { class: "vac-room-divider" }, [
+const _hoisted_14 = { class: "vac-menu-list" };
+const _hoisted_15 = ["onClick"];
+const _hoisted_16 = /* @__PURE__ */ createBaseVNode("div", { class: "vac-room-divider" }, [
   /* @__PURE__ */ createBaseVNode("hr")
 ], -1);
 function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
@@ -8685,7 +8693,15 @@ function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
               }, null, 8, ["name", "param"])
             ])
           ])) : createCommentVNode("", true),
-          $props.room.lastMessage && !$props.room.lastMessage.deleted && $options.isAudio ? (openBlock(), createElementBlock("div", _hoisted_7$6, [
+          $props.room.lastMessage && !$props.room.lastMessage.deleted && $options.isImage ? (openBlock(), createElementBlock("div", _hoisted_7$6, [
+            createBaseVNode("img", {
+              src: $props.room.lastMessage.files[0].preview,
+              width: "32",
+              height: "32",
+              style: { "object-fit": "cover", "object-position": "center -10px" }
+            }, null, 8, _hoisted_8$4)
+          ])) : createCommentVNode("", true),
+          $props.room.lastMessage && !$props.room.lastMessage.deleted && $options.isAudio ? (openBlock(), createElementBlock("div", _hoisted_9$4, [
             renderSlot(_ctx.$slots, "microphone-icon_" + $props.room.roomId, {}, () => [
               createVNode(_component_svg_icon, {
                 name: "microphone",
@@ -8694,7 +8710,7 @@ function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
             ]),
             createTextVNode(" " + toDisplayString($options.formattedDuration), 1)
           ])) : $props.room.lastMessage ? (openBlock(), createBlock(_component_format_message, {
-            key: 2,
+            key: 3,
             "message-id": $props.room.lastMessage._id,
             "room-id": $props.room.roomId,
             "room-list": true,
@@ -8716,9 +8732,9 @@ function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
               };
             })
           ]), 1032, ["message-id", "room-id", "content", "deleted", "users", "text-messages", "text-formatting", "link-options"])) : createCommentVNode("", true),
-          !$props.room.lastMessage && $options.typingUsers ? (openBlock(), createElementBlock("div", _hoisted_8$4, toDisplayString($options.typingUsers), 1)) : createCommentVNode("", true),
-          createBaseVNode("div", _hoisted_9$4, [
-            $props.room.unreadCount ? (openBlock(), createElementBlock("div", _hoisted_10$4, toDisplayString($props.room.unreadCount), 1)) : createCommentVNode("", true),
+          !$props.room.lastMessage && $options.typingUsers ? (openBlock(), createElementBlock("div", _hoisted_10$4, toDisplayString($options.typingUsers), 1)) : createCommentVNode("", true),
+          createBaseVNode("div", _hoisted_11$3, [
+            $props.room.unreadCount ? (openBlock(), createElementBlock("div", _hoisted_12$3, toDisplayString($props.room.unreadCount), 1)) : createCommentVNode("", true),
             renderSlot(_ctx.$slots, "room-list-options_" + $props.room.roomId, {}, () => [
               $props.roomActions.length ? (openBlock(), createElementBlock("div", {
                 key: 0,
@@ -8737,8 +8753,8 @@ function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
                 name: "vac-slide-left"
               }, {
                 default: withCtx(() => [
-                  $data.roomMenuOpened === $props.room.roomId ? withDirectives((openBlock(), createElementBlock("div", _hoisted_11$3, [
-                    createBaseVNode("div", _hoisted_12$3, [
+                  $data.roomMenuOpened === $props.room.roomId ? withDirectives((openBlock(), createElementBlock("div", _hoisted_13$1, [
+                    createBaseVNode("div", _hoisted_14, [
                       (openBlock(true), createElementBlock(Fragment, null, renderList($props.roomActions, (action) => {
                         return openBlock(), createElementBlock("div", {
                           key: action.name
@@ -8746,7 +8762,7 @@ function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
                           createBaseVNode("div", {
                             class: "vac-menu-item",
                             onClick: withModifiers(($event) => $options.roomActionHandler(action), ["stop"])
-                          }, toDisplayString(action.title), 9, _hoisted_13$1)
+                          }, toDisplayString(action.title), 9, _hoisted_15)
                         ]);
                       }), 128))
                     ])
@@ -8759,7 +8775,7 @@ function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
             ])
           ])
         ], 2),
-        _hoisted_14
+        _hoisted_16
       ])
     ])
   ]);

@@ -46,6 +46,12 @@
 						</slot>
 					</span>
           <div
+            v-if="room.lastMessage && !room.lastMessage.deleted && isImage"
+            class="vac-text-ellipsis"
+          >
+            <img :src="room.lastMessage.files[0].preview"  width="32" height="32" style="object-fit: cover; object-position: center -10px;" />
+          </div>
+          <div
             v-if="room.lastMessage && !room.lastMessage.deleted && isAudio"
             class="vac-text-ellipsis"
           >
@@ -130,7 +136,7 @@ import FormatMessage from '../../../components/FormatMessage/FormatMessage'
 
 import vClickOutside from '../../../utils/on-click-outside'
 import typingText from '../../../utils/typing-text'
-import { isAudioFile } from '../../../utils/media-file'
+import { isAudioFile, isImageFile } from '../../../utils/media-file'
 import { Icon } from '@iconify/vue'
 import verifiedIcon from '@iconify-icons/material-symbols/verified'
 
@@ -226,6 +232,11 @@ export default {
     isAudio() {
       return this.room.lastMessage.files
         ? isAudioFile(this.room.lastMessage.files[0])
+        : false
+    },
+    isImage() {
+      return this.room.lastMessage.files
+        ? isImageFile(this.room.lastMessage.files[0])
         : false
     }
   },
