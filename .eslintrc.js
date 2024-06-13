@@ -6,6 +6,8 @@ module.exports = {
   extends: ['standard', 'plugin:vue/vue3-recommended', '@vue/typescript'],
   ignorePatterns: ['src/utils/lamejs/*.js'],
   rules: {
+    'semi': [2, 'never'],
+    'comma-dangle': ['warn', 'always-multiline'],
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-control-regex': 0,
@@ -16,7 +18,6 @@ module.exports = {
         deepData: true,
       },
     ],
-    'comma-dangle': ['warn', 'always-multiline'],
     'no-empty-pattern': 'off',
     'no-unused-vars': 'warn',
     'valid-typeof': 'off',
