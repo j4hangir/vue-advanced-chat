@@ -363,6 +363,7 @@ export default {
       // j4hangir: MutationObserver works more reliably in iOS than ResizeObserver
       const observer = new MutationObserver(_ => {
         if (container.scrollHeight !== prevScrollHeight) {
+          // TODO by j4hangir: Resolve the small jump
           container.scrollTop += container.scrollHeight - prevScrollHeight
           observer.disconnect()
 
