@@ -31,6 +31,7 @@
   .vac-container-scroll {
     background: var(--chat-content-bg-color);
     flex: 1;
+    padding-bottom: 20px; /* j4hangir: makeshift for iOS (and possibly android) that never scroll to the very bottom */
     overflow-y: auto;
     margin-right: 1px;
     margin-top: 65px;
