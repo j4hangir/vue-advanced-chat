@@ -63,10 +63,7 @@
               </div>
             </div>
           </transition>
-          <div
-            v-if="messages.length && !messagesLoaded"
-            id="infinite-loader-messages"
-          >
+          <div v-if="messages.length && !messagesLoaded" id="infinite-loader-messages">
             <loader :show="true" :infinite="true" type="infinite-messages">
               <template v-for="(idx, name) in $slots" #[name]="data">
                 <slot :name="name" v-bind="data" />
@@ -174,6 +171,7 @@ import SvgIcon from '../../components/SvgIcon/SvgIcon'
 import RoomHeader from './RoomHeader/RoomHeader'
 import RoomFooter from './RoomFooter/RoomFooter'
 import RoomMessage from './RoomMessage/RoomMessage'
+import { nextTick } from 'vue'
 
 export default {
   name: 'ChatRoom',
@@ -362,19 +360,25 @@ export default {
       const container = this.$refs.scrollContainer
       const prevScrollHeight = container.scrollHeight
 
-      const observer = new ResizeObserver(_ => {
+      // j4hangir: MutationObserver works more reliably in iOS than ResizeObserver
+      const observer = new MutationObserver(_ => {
         if (container.scrollHeight !== prevScrollHeight) {
-          if (this.$refs.scrollContainer) {
-            this.$refs.scrollContainer.scrollTo({
-              top: container.scrollHeight - prevScrollHeight,
-            })
-            observer.disconnect()
-          }
+          container.scrollTop += container.scrollHeight - prevScrollHeight
+          observer.disconnect()
+
+          // j4hangir: in iOS we need to trigger a reflow
+          // Force reflow
+          container.style.display = 'none'
+          // eslint-disable-next-line
+          container.offsetHeight // Trigger reflow
+          container.style.display = 'block'
         }
       })
 
-      for (var i = 0; i < container.children.length; i++) {
-        observer.observe(container.children[i])
+      observer.observe(container, { childList: true, subtree: true })
+
+      for (let i = 0; i < container.children.length; i++) {
+        observer.observe(container.children[i], { childList: true, subtree: true })
       }
     },
     touchStart(touchEvent) {
@@ -441,7 +445,6 @@ export default {
     },
     onMessageAdded({ message, index, ref }) {
       if (index !== this.messages.length - 1) return
-
       const autoScrollOffset = ref.offsetHeight + 60
 
       setTimeout(() => {

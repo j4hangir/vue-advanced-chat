@@ -19962,18 +19962,18 @@ const _sfc_main$2 = {
     preventTopScroll() {
       const container = this.$refs.scrollContainer;
       const prevScrollHeight = container.scrollHeight;
-      const observer = new ResizeObserver((_) => {
+      const observer = new MutationObserver((_) => {
         if (container.scrollHeight !== prevScrollHeight) {
-          if (this.$refs.scrollContainer) {
-            this.$refs.scrollContainer.scrollTo({
-              top: container.scrollHeight - prevScrollHeight
-            });
-            observer.disconnect();
-          }
+          container.scrollTop += container.scrollHeight - prevScrollHeight;
+          observer.disconnect();
+          container.style.display = "none";
+          container.offsetHeight;
+          container.style.display = "block";
         }
       });
-      for (var i = 0; i < container.children.length; i++) {
-        observer.observe(container.children[i]);
+      observer.observe(container, { childList: true, subtree: true });
+      for (let i = 0; i < container.children.length; i++) {
+        observer.observe(container.children[i], { childList: true, subtree: true });
       }
     },
     touchStart(touchEvent) {
