@@ -18061,14 +18061,15 @@ const _sfc_main$a = {
       el.style.height = el.scrollHeight - padding * 2 + "px";
     },
     escapeTextarea() {
-      if (this.filteredEmojis.length)
+      if (this.filteredEmojis.length) {
         this.filteredEmojis = [];
-      else if (this.filteredUsersTag.length)
+      } else if (this.filteredUsersTag.length) {
         this.filteredUsersTag = [];
-      else if (this.filteredTemplatesText.length) {
+      } else if (this.filteredTemplatesText.length) {
         this.filteredTemplatesText = [];
-      } else
+      } else {
         this.resetMessage();
+      }
     },
     onPasteImage(pasteEvent) {
       var _a;
