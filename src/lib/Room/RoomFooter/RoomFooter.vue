@@ -53,41 +53,22 @@
       </template>
     </room-files>
 
-    <div
-      class="vac-box-footer"
-      :class="{ 'vac-box-footer-border': !files.length }"
-    >
-      <div v-if="showAudio && !files.length" class="vac-icon-textarea-left">
-        <template v-if="isRecording">
-          <div class="vac-svg-button vac-icon-audio-stop" @click="stopRecorder">
-            <slot name="audio-stop-icon">
-              <svg-icon name="close-outline" />
-            </slot>
-          </div>
-
-          <div class="vac-dot-audio-record" />
-
-          <div class="vac-dot-audio-record-time">
-            {{ recordedTime }}
-          </div>
-
-          <div
-            class="vac-svg-button vac-icon-audio-confirm"
-            @click="toggleRecorder(false)"
-          >
-            <slot name="audio-check-icon">
-              <svg-icon name="checkmark" />
-            </slot>
-          </div>
-        </template>
-
-        <div v-else class="vac-svg-button" @click="toggleRecorder(true)">
-          <slot name="microphone-icon">
-            <svg-icon name="microphone" class="vac-icon-microphone" />
-          </slot>
-        </div>
+    <div class="vac-box-footer" :class="{ 'vac-box-footer-border': !files.length }">
+      <input
+        v-if="showFiles"
+        ref="file"
+        type="file"
+        multiple
+        :accept="acceptedFiles"
+        :capture="captureFiles"
+        style="display: none"
+        @change="onFileChange($event.target.files)"
+      />
+      <div v-if="showFiles" class="vac-svg-button vac-icon-textarea-left" @click="launchFilePicker">
+        <slot name="paperclip-icon">
+          <svg-icon name="paperclip" />
+        </slot>
       </div>
-
       <textarea
         id="roomTextarea"
         ref="roomTextarea"
@@ -141,11 +122,6 @@
           </slot>
         </div>
 
-        <div v-if="showFiles" class="vac-svg-button" @click="launchFilePicker">
-          <slot name="paperclip-icon">
-            <svg-icon name="paperclip" />
-          </slot>
-        </div>
 
         <div
           v-if="textareaActionEnabled"
@@ -157,30 +133,54 @@
           </slot>
         </div>
 
-        <input
-          v-if="showFiles"
-          ref="file"
-          type="file"
-          multiple
-          :accept="acceptedFiles"
-          :capture="captureFiles"
-          style="display: none"
-          @change="onFileChange($event.target.files)"
-        />
 
-        <div
-          v-if="showSendIcon"
-          class="vac-svg-button"
-          :class="{ 'vac-send-disabled': isMessageEmpty }"
-          @click="sendMessage"
-        >
-          <slot name="send-icon">
-            <svg-icon
-              name="send"
-              :param="isMessageEmpty || isFileLoading ? 'disabled' : ''"
-            />
-          </slot>
-        </div>
+        <transition name="vac-fade" mode="out-in">
+          <div v-if="showAudio && isMessageEmpty && !files.length" class="vac-icon-textarea-right">
+            <template v-if="isRecording">
+              <div class="vac-svg-button vac-icon-audio-stop" @click="stopRecorder">
+                <slot name="audio-stop-icon">
+                  <svg-icon name="close-outline" />
+                </slot>
+              </div>
+
+              <div class="vac-dot-audio-record" />
+
+              <div class="vac-dot-audio-record-time">
+                {{ recordedTime }}
+              </div>
+
+              <div
+                class="vac-svg-button vac-icon-audio-confirm"
+                @click="toggleRecorder(false)"
+              >
+                <slot name="audio-check-icon">
+                  <svg-icon name="checkmark" />
+                </slot>
+              </div>
+            </template>
+
+            <div v-else class="vac-svg-button" @click="toggleRecorder(true)">
+              <slot name="microphone-icon">
+                <svg-icon name="microphone" class="vac-icon-microphone" />
+              </slot>
+            </div>
+          </div>
+          <!--            v-if="showSendIcon && !isMessageEmpty"-->
+          <div
+            v-else
+            class="vac-svg-button"
+            :class="{ 'vac-send-disabled': isMessageEmpty }"
+            @click="sendMessage"
+          >
+            <slot name="send-icon">
+              <svg-icon
+                name="send"
+                :param="isMessageEmpty || isFileLoading ? 'disabled' : ''"
+              />
+            </slot>
+          </div>
+        </transition>
+
       </div>
     </div>
   </div>
