@@ -11,7 +11,7 @@ export default class {
 
     this.encoderOptions = {
       bitRate: options.bitRate,
-      sampleRate: options.sampleRate
+      sampleRate: options.sampleRate,
     }
 
     this.bufferSize = 4096
@@ -83,7 +83,7 @@ export default class {
 
     const record = {
       blob: this.b64toBlob(base64Sound, mimeType),
-      duration: res.value.msDuration
+      duration: res.value.msDuration,
 
     }
     this.records.push(record)

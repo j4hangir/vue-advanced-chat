@@ -180,7 +180,6 @@
             </slot>
           </div>
         </transition>
-
       </div>
     </div>
   </div>

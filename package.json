@@ -71,8 +71,8 @@
         "wavesurfer.js": "^6.3.0"
     },
     "dependencies": {
-        "@capacitor/core": "^4.4.0",
-        "capacitor-voice-recorder": "^4.0.0",
+        "@capacitor/core": "^6.1.0",
+        "capacitor-voice-recorder": "^5.0.0",
         "emoji-picker-element": "1.12.1",
         "linkifyjs": "2.1.9"
     }

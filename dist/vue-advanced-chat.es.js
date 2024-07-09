@@ -17459,6 +17459,7 @@ Capacitor.Plugins;
 class WebPlugin {
   constructor(config) {
     this.listeners = {};
+    this.retainedEventArguments = {};
     this.windowListeners = {};
     if (config) {
       console.warn(`Capacitor WebPlugin "${config.name}" config object was deprecated in v3 and will be removed in v4.`);
@@ -17466,23 +17467,22 @@ class WebPlugin {
     }
   }
   addListener(eventName, listenerFunc) {
+    let firstListener = false;
     const listeners = this.listeners[eventName];
     if (!listeners) {
       this.listeners[eventName] = [];
+      firstListener = true;
     }
     this.listeners[eventName].push(listenerFunc);
     const windowListener = this.windowListeners[eventName];
     if (windowListener && !windowListener.registered) {
       this.addWindowListener(windowListener);
     }
+    if (firstListener) {
+      this.sendRetainedArgumentsForEvent(eventName);
+    }
     const remove2 = async () => this.removeListener(eventName, listenerFunc);
     const p2 = Promise.resolve({ remove: remove2 });
-    Object.defineProperty(p2, "remove", {
-      value: async () => {
-        console.warn(`Using addListener() without 'await' is deprecated.`);
-        await remove2();
-      }
-    });
     return p2;
   }
   async removeAllListeners() {
@@ -17492,11 +17492,20 @@ class WebPlugin {
     }
     this.windowListeners = {};
   }
-  notifyListeners(eventName, data2) {
+  notifyListeners(eventName, data2, retainUntilConsumed) {
     const listeners = this.listeners[eventName];
-    if (listeners) {
-      listeners.forEach((listener) => listener(data2));
+    if (!listeners) {
+      if (retainUntilConsumed) {
+        let args = this.retainedEventArguments[eventName];
+        if (!args) {
+          args = [];
+        }
+        args.push(data2);
+        this.retainedEventArguments[eventName] = args;
+      }
+      return;
     }
+    listeners.forEach((listener) => listener(data2));
   }
   hasListeners(eventName) {
     return !!this.listeners[eventName].length;
@@ -17538,6 +17547,16 @@ class WebPlugin {
     }
     window.removeEventListener(handle.windowEventName, handle.handler);
     handle.registered = false;
+  }
+  sendRetainedArgumentsForEvent(eventName) {
+    const args = this.retainedEventArguments[eventName];
+    if (!args) {
+      return;
+    }
+    delete this.retainedEventArguments[eventName];
+    args.forEach((arg) => {
+      this.notifyListeners(eventName, arg);
+    });
   }
 }
 const encode = (str) => encodeURIComponent(str).replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent).replace(/[()]/g, escape);
@@ -17648,7 +17667,7 @@ const buildRequestInit = (options2, extra = {}) => {
       params.set(key, value);
     }
     output.body = params.toString();
-  } else if (type.includes("multipart/form-data")) {
+  } else if (type.includes("multipart/form-data") || options2.data instanceof FormData) {
     const form = new FormData();
     if (options2.data instanceof FormData) {
       options2.data.forEach((value, key) => {
@@ -22118,8 +22137,7 @@ class VoiceRecorderImpl {
     if (!havingPermission.value) {
       throw missingPermissionError();
     }
-    navigator.mediaDevices.getUserMedia({ audio: true }).then(this.onSuccessfullyStartedRecording.bind(this)).catch(this.onFailedToStartRecording.bind(this));
-    return successResponse();
+    return navigator.mediaDevices.getUserMedia({ audio: true }).then(this.onSuccessfullyStartedRecording.bind(this)).catch(this.onFailedToStartRecording.bind(this));
   }
   async stopRecording() {
     if (this.mediaRecorder == null) {
@@ -22212,6 +22230,7 @@ class VoiceRecorderImpl {
       this.mediaRecorder.ondataavailable = (event) => this.chunks.push(event.data);
       this.mediaRecorder.start();
     });
+    return successResponse();
   }
   onFailedToStartRecording() {
     this.prepareInstanceForNextOperation();
